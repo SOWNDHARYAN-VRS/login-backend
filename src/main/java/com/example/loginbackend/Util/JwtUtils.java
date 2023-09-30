@@ -1,6 +1,7 @@
 package com.example.loginbackend.Util;
 
 
+import com.example.loginbackend.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -25,11 +26,11 @@ public class JwtUtils {
                 .signWith(SignatureAlgorithm.HS256,secret)
                 .compact();
     }
-    public void validateToken(String token) throws Exception {
+    public void validateToken(String token) throws InvalidTokenException {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
         }catch (Exception e){
-            throw new Exception("Invalid token");
+            throw new InvalidTokenException("Invalid token");
         }
     }
     public String metaEmail(String token){

@@ -26,21 +26,26 @@ public class UserServiceImpl implements UserService{
     PasswordHash passwordHash;
 
     @Override
-    public ResponseEntity<ApiResponse> profileDetails(String auth) throws Exception {
-        User user=userRepository.findByEmail(jwtUtils.metaEmail(auth));
-        jwtUtils.validateToken(auth);
-        UserDetailsDto details=new UserDetailsDto();
-        details.setAddress(user.getAddress());
-        details.setCity(user.getCity());
-        details.setCountry(user.getCountry());
-        details.setPhoneNumber(user.getPhoneNumber());
-        details.setEmail(user.getEmail());
-        details.setState(user.getState());
-        details.setFirstName(user.getFirstName());
-        details.setLastName(user.getLastName());
-        List<UserDetailsDto> detailsDtos = new ArrayList<>();
-        detailsDtos.add(details);
-        return ResponseEntity.ok(new ApiResponse("profile",true,detailsDtos));
+    public ResponseEntity<ApiResponse> profileDetails(String auth) {
+        try {
+            User user = userRepository.findByEmail(jwtUtils.metaEmail(auth));
+            jwtUtils.validateToken(auth);
+            UserDetailsDto details = new UserDetailsDto();
+            details.setAddress(user.getAddress());
+            details.setCity(user.getCity());
+            details.setCountry(user.getCountry());
+            details.setPhoneNumber(user.getPhoneNumber());
+            details.setEmail(user.getEmail());
+            details.setState(user.getState());
+            details.setFirstName(user.getFirstName());
+            details.setLastName(user.getLastName());
+            List<UserDetailsDto> detailsDtos = new ArrayList<>();
+            detailsDtos.add(details);
+            return ResponseEntity.ok(new ApiResponse("profile", true, detailsDtos));
+        }
+        catch (InvalidTokenException e){
+            return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(), false, null));
+        }
     }
 
     @Override
@@ -66,7 +71,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ResponseEntity<ApiResponse> userDetails(String auth) throws InvalidTokenException {
+    public ResponseEntity<ApiResponse> userDetails(String auth)  {
         try {
                 jwtUtils.validateToken(auth);
             List<User> users=userRepository.findAll();
@@ -88,8 +93,6 @@ public class UserServiceImpl implements UserService{
         }
         catch (InvalidTokenException e){
             return ResponseEntity.badRequest().body(new ApiResponse(e.getMessage(),false,null));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
     }
