@@ -31,6 +31,7 @@ public class JwtUtils {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
         }catch (Exception e){
             throw new InvalidTokenException("Invalid token");
+
         }
     }
     public String metaEmail(String token){
