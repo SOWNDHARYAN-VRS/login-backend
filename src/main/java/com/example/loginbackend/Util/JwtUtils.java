@@ -11,30 +11,36 @@ import java.util.Date;
 
 @Component
 public class JwtUtils {
-    private static String secret="this_is_secret";
-    private long milliTime=System.currentTimeMillis();
-    private Date issuedAt=new Date(milliTime);
-    private Date expiry =new Date(milliTime+(60*60*100));
+    private static String secret = "this_is_secret";
+    private long milliTime = System.currentTimeMillis();
+    private Date issuedAt = new Date(milliTime);
+    private Date expiry = new Date(milliTime + (60 * 60 * 100));
 
-    public String generateJwt(String email){
-        Claims claims= Jwts.claims().
+    public String generateJwt(String email) {
+        Claims claims = Jwts.claims().
                 setIssuer(email)
                 .setIssuedAt(issuedAt)
                 .setExpiration(expiry);
         return Jwts.builder()
                 .setClaims(claims)
-                .signWith(SignatureAlgorithm.HS256,secret)
+                .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }
-    public void validateToken(String token) throws InvalidTokenException {
-        try {
-            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-        }catch (Exception e){
-            throw new InvalidTokenException("Invalid token");
 
+    public Boolean validateToken(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+            Date expiration = claims.getExpiration();
+            Date current = new Date();
+            if (expiration != null && current.after(expiration)) {
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
     }
-    public String metaEmail(String token){
+    public String metaEmail (String token){
         Claims claims = Jwts.parser()
                 .setSigningKey(secret)
                 .parseClaimsJws(token)
