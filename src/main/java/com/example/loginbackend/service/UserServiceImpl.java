@@ -65,7 +65,7 @@ public class UserServiceImpl implements UserService{
         return ResponseEntity.ok(new ApiResponse<>("Registered",true,null));
         }
         else {
-            return ResponseEntity.badRequest().body(new ApiResponse<>("wrong password",false,null));
+            return ResponseEntity.badRequest().body(new ApiResponse<>("password mismatch",false,null));
         }
     }
 
